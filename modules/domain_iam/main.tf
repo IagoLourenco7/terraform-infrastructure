@@ -8,6 +8,14 @@
 # ============================================================
 
 # --------- Trust policy padrão (assumida por usuários federados/SSO) ---------
+data "aws_caller_identity" "current" {}
+
+locals {
+  # Fallback: se nenhum principal confiavel for informado, usa a conta root
+  # (evita erro de "policy sem principals" em testes iniciais do POC)
+  effective_trusted_principals = length(var.trusted_principal_arns) > 0 ? var.trusted_principal_arns : ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
+}
+
 data "aws_iam_policy_document" "assume_role" {
   statement {
     effect  = "Allow"
@@ -15,7 +23,7 @@ data "aws_iam_policy_document" "assume_role" {
 
     principals {
       type        = "AWS"
-      identifiers = var.trusted_principal_arns
+            identifiers = local.effective_trusted_principals
     }
   }
 }
