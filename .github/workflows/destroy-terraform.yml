@@ -1,0 +1,53 @@
+name: Destroy Terraform (POC)
+
+# Disparo apenas manual - nunca em push, para evitar destruicao acidental.
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Digite DESTROY para confirmar a destruicao de TODA a infra do POC'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_DEFAULT_REGION: us-east-1
+  TF_WORKING_DIR: environments/poc
+
+jobs:
+  guard:
+    name: Valida confirmacao
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checa se o input eh DESTROY
+        run: |
+          if [ "${{ github.event.inputs.confirm }}" != "DESTROY" ]; then
+            echo "Confirmacao invalida. Digite exatamente DESTROY para prosseguir."
+            exit 1
+          fi
+
+  terraform-destroy:
+    name: Terraform Destroy
+    needs: guard
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.6.6"
+
+      - name: Terraform Init
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform init
+
+      - name: Terraform Destroy
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform destroy -auto-approve -input=false
