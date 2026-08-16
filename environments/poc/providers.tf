@@ -12,12 +12,11 @@ terraform {
     }
   }
 
-  # Backend remoto - ajuste para o seu bucket de state antes do primeiro apply.
-  # backend "s3" {
-  #   bucket = "SEU-BUCKET-DE-TERRAFORM-STATE"
-  #   key    = "poc/terraform.tfstate"
-  #   region = "us-east-1"
-  # }
+  backend "s3" {
+    bucket = "tf-state-647949735337-poc"
+    key    = "poc/terraform.tfstate"
+    region = "us-east-1"
+  }
 }
 
 provider "aws" {
