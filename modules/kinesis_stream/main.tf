@@ -36,3 +36,5 @@ resource "aws_cloudwatch_metric_alarm" "iterator_age" {
     StreamName = aws_kinesis_stream.online_events.name
   }
 }
+
+# retry: kinesis liberado apos upgrade da conta AWS
