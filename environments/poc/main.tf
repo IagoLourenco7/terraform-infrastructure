@@ -58,3 +58,15 @@ module "workspace_cleanup" {
   workspace_bucket_name  = module.athena_workspaces.workspaces_bucket_name
   workspace_bucket_arn   = "arn:aws:s3:::${module.athena_workspaces.workspaces_bucket_name}"
 }
+
+module "glue_jobs" {
+  source = "../../modules/glue_jobs"
+
+  domain_name        = var.domain_name
+  environment        = var.environment
+  pipeline_role_arn  = module.domain_iam.pipeline_role_arn
+  bronze_bucket      = module.lake_layers.bucket_names["bronze"]
+  silver_bucket      = module.lake_layers.bucket_names["silver"]
+  gold_bucket        = module.lake_layers.bucket_names["gold"]
+  audit_logs_bucket  = module.audit_logging.audit_logs_bucket_name
+}

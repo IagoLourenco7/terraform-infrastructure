@@ -21,3 +21,12 @@ output "athena_workspaces_bucket" {
 output "audit_logs_bucket" {
   value = module.audit_logging.audit_logs_bucket_name
 }
+
+output "glue_scripts_bucket" {
+  description = "Bucket para onde o CI/CD do data-lake-batch-pipeline deve enviar os scripts"
+  value       = module.glue_jobs.scripts_bucket_name
+}
+
+output "glue_job_names" {
+  value = module.glue_jobs.job_names
+}
